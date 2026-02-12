@@ -11,14 +11,28 @@ export type Story = {
 export type StoryBlock =
   | { type: 'text'; content: string }
   | { type: 'image'; publicId: string; alt: string; caption?: string }
-  | { type: 'behindShot'; title: string; content: string; settings?: string }
-  | { type: 'audio'; title: string; src: string }
+  | {
+      type: 'behindShot';
+      id?: string;
+      title: string;
+      content: string;
+      settings?: string;
+    }
+  | { type: 'audio'; title: string; src: string; subtitle?: string }
   | {
       type: 'splitSticky';
+      id?: string;
       image: { publicId: string; alt: string; caption?: string };
       eyebrow?: string;
       title?: string;
       paragraphs: string[];
+    }
+  | {
+      type: 'horizontalGallery';
+      id?: string;
+      title?: string;
+      subtitle?: string;
+      images: { publicId: string; alt: string; caption?: string }[];
     };
 
 export const stories: Story[] = [
@@ -45,13 +59,47 @@ export const stories: Story[] = [
       },
       {
         type: 'behindShot',
+        id: 'behind-the-shot',
         title: 'Behind the shot',
         content:
           'This moment hits fast: the drum comes up, the backlight blooms, and the costume turns into geometry. I shot for shape first — letting the smoke simplify the scene — and waited for the drumhead to catch the light like a small, burning moon.',
         settings: '24-70mm • f/4.0 • 1/200 • ISO 6400',
       },
       {
+        type: 'horizontalGallery',
+        id: 'gallery-ritual-details',
+        title: 'Details & Atmosphere',
+        subtitle:
+          'Textures, smoke, light, and symbols — the stuff the crowd feels before they can name it.',
+        images: [
+          {
+            publicId: '_TPW5810-DxO_DeepPRIME_XD2s_oz6f7n',
+            alt: 'Maria Franz of Heilung at Red Rocks',
+            caption: 'Smoke and backlight turning costume into silhouette.',
+          },
+          {
+            publicId: '_TPW5756-DxO_DeepPRIME_XD2s_tw9c2y',
+            alt: 'Maria Franz of Heilung at Red Rocks',
+            caption: 'Smoke and backlight turning costume into silhouette.',
+          },
+          {
+            publicId: '_TPW5797-DxO_DeepPRIME_3_smxqxp',
+            alt: 'Maria Franz of Heilung at Red Rocks',
+            caption: 'Smoke and backlight turning costume into silhouette.',
+          },
+          {
+            publicId: '_TPW5804-DxO_DeepPRIME_3_hfttd3',
+            alt: 'Maria Franz of Heilung at Red Rocks',
+            caption: 'Smoke and backlight turning costume into silhouette.',
+          },
+          // Add more Cloudinary publicIds here
+          // { publicId: '...', alt: '...', caption: '...' },
+        ],
+      },
+
+      {
         type: 'splitSticky',
+        id: 'chapter-ceremony',
         eyebrow: 'Chapter I',
         title: 'Ceremony, not spectacle',
         image: {
@@ -70,6 +118,12 @@ export const stories: Story[] = [
         type: 'text',
         content:
           'Photographing Heilung is a balancing act: the instinct is to chase detail — beads, fringe, paint — but the stronger choice is often silhouette. Let the light tell the truth first.',
+      },
+      {
+        type: 'audio',
+        title: 'Audio',
+        src: '/audio/majestic-sonata.mp3',
+        subtitle: 'Recorded at Red Rocks (2024)',
       },
     ],
   },

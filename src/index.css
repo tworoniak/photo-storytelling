@@ -66,8 +66,8 @@ html {
   align-items: center;
   justify-content: center;
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  /* bottom: 2rem; */
+  /* right: 2rem; */
   width: 44px;
   height: 44px;
   border-radius: 50%;

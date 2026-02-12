@@ -9,11 +9,57 @@ import StoryAudio from '../components/story/StoryAudio';
 import MotionReveal from '../components/motion/MotionReveal';
 import ReadingProgress from '../components/motion/ReadingProgress';
 import StorySplitSticky from '../components/story/StorySplitSticky';
+import StoryHorizontalGallery from '../components/story/StoryHorizontalGallery';
+import StoryTOCMobile from '../components/story/StoryTOCMobile';
+
+type TocItem = {
+  id: string;
+  label: string;
+  sublabel?: string;
+};
+
+function hasId(x: unknown): x is { id: string } {
+  if (typeof x !== 'object' || x === null) return false;
+  if (!('id' in x)) return false;
+  const v = (x as Record<string, unknown>).id;
+  return typeof v === 'string' && v.length > 0;
+}
 
 export default function StoryPage() {
   const { slug } = useParams();
-
   const story = stories.find((s) => s.slug === slug);
+
+  // ✅ No hooks -> no hook/deps warnings
+  const tocItems: TocItem[] = story
+    ? story.blocks
+        .filter((b) => hasId(b))
+        .flatMap((b) => {
+          if (b.type === 'splitSticky') {
+            return [
+              {
+                id: b.id,
+                label: b.title ?? b.eyebrow ?? 'Chapter',
+                sublabel: b.eyebrow && b.title ? b.eyebrow : undefined,
+              },
+            ];
+          }
+
+          if (b.type === 'horizontalGallery') {
+            return [
+              {
+                id: b.id,
+                label: b.title ?? 'Gallery',
+                sublabel: b.subtitle,
+              },
+            ];
+          }
+
+          // If you later add `id?: string` to behindShot, you can include it here:
+          // if (b.type === 'behindShot') return [{ id: b.id, label: b.title, sublabel: 'Behind the shot' }];
+
+          return [];
+        })
+    : [];
 
   if (!story) {
     return (
@@ -27,6 +73,7 @@ export default function StoryPage() {
   return (
     <div>
       <ReadingProgress />
+
       <StoryHero
         title={story.title}
         description={story.description}
@@ -34,6 +81,8 @@ export default function StoryPage() {
         date={story.date}
         heroImageId={story.heroImageId}
       />
+
+      <StoryTOCMobile items={tocItems} />
 
       <div className="mx-auto max-w-3xl px-6 py-16">
         {story.blocks.map((block, index) => {
@@ -43,7 +92,7 @@ export default function StoryPage() {
             return (
               <MotionReveal key={index} delay={delay} y={12}>
                 <StorySection>
-                  <p className="text-lg leading-relaxed text-neutral-200">
+                  <p className="mb-4 text-lg leading-relaxed text-neutral-200">
                     {block.content}
                   </p>
                 </StorySection>
@@ -51,10 +100,23 @@ export default function StoryPage() {
             );
           }
 
+          if (block.type === 'horizontalGallery') {
+            return (
+              <MotionReveal key={index} delay={delay}>
+                <StoryHorizontalGallery
+                  id={block.id}
+                  title={block.title}
+                  subtitle={block.subtitle}
+                  images={block.images}
+                />
+              </MotionReveal>
+            );
+          }
+
           if (block.type === 'splitSticky') {
             return (
               <MotionReveal key={index} delay={delay}>
-                <StorySection>
+                <StorySection id={block.id}>
                   <StorySplitSticky
                     image={block.image}
                     eyebrow={block.eyebrow}
@@ -96,9 +158,13 @@ export default function StoryPage() {
 
           if (block.type === 'audio') {
             return (
-              <MotionReveal key={index} delay={delay} y={12}>
+              <MotionReveal key={index} delay={delay}>
                 <StorySection>
-                  <StoryAudio title={block.title} src={block.src} />
+                  <StoryAudio
+                    title={block.title}
+                    src={block.src}
+                    subtitle={block.subtitle}
+                  />
                 </StorySection>
               </MotionReveal>
             );
