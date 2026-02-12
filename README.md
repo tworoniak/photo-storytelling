@@ -1,73 +1,108 @@
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Interactive Photo Storytelling 📸✨
 
-Currently, two official plugins are available:
+A scroll-driven, digital magazine-style photo storytelling experience built with **React + TypeScript**, featuring cinematic parallax hero sections, animated chapter reveals, embedded audio moments, and an editorial chapter navigation system.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project is designed as a premium, portfolio-ready showcase of modern frontend UI engineering — combining performance, layout design, and motion-driven storytelling.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+### 📰 Digital Magazine Layout
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+A long-form editorial page structure designed for immersive photo stories:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Full-screen hero cover
+- Captioned photography blocks
+- “Behind the Shot” callouts
+- Sticky image + scrolling text chapter sections
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 🎞 Scroll-Based Animations
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Smooth, subtle scroll interactions powered by **Framer Motion**:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- fade-in reveal blocks
+- scroll-driven parallax hero motion
+- cinematic zoom/overlay transitions
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 📍 Chapter Navigation / Table of Contents
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+A desktop-friendly sticky TOC system:
+
+- auto-generated chapter links
+- smooth scrolling to sections
+- active chapter highlighting while scrolling
+
+### 📊 Reading Progress Indicator
+
+A minimal progress bar that tracks story scroll position for an editorial reading experience.
+
+### 🔊 Embedded Audio Blocks
+
+Support for audio “sound postcards” to add atmosphere:
+
+- ambient crowd noise
+- backstage moments
+- ritual / cinematic sound elements
+
+### ☁️ Cloudinary Image Delivery
+
+All photography is served via Cloudinary for performance and scalability:
+
+- optimized image delivery
+- automatic format conversion (`f_auto`)
+- quality control (`q_auto` / `auto:best`)
+- responsive sizing support
+
+---
+
+## 🧰 Tech Stack
+
+- **React**
+- **TypeScript**
+- **Vite**
+- **TailwindCSS**
+- **Framer Motion**
+- **React Router DOM**
+- **Cloudinary (image hosting + optimization)**
+
+---
+
+## 📂 Project Structure
+
+```txt
+src/
+  app/
+    router.tsx
+
+  pages/
+    HomePage.tsx
+    StoryPage.tsx
+
+  data/
+    stories.ts
+
+  components/
+    motion/
+      MotionReveal.tsx
+      ReadingProgress.tsx
+
+    story/
+      StoryHero.tsx
+      StorySection.tsx
+      StoryImage.tsx
+      StoryBehindShot.tsx
+      StoryAudio.tsx
+      StorySplitSticky.tsx
+      StoryTOC.tsx
+
+  utils/
+    cloudinary.ts
+
+  App.tsx
+  main.tsx
+  index.css
+
 ```
