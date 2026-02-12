@@ -11,6 +11,7 @@ import ReadingProgress from '../components/motion/ReadingProgress';
 import StorySplitSticky from '../components/story/StorySplitSticky';
 import StoryHorizontalGallery from '../components/story/StoryHorizontalGallery';
 import StoryTOCMobile from '../components/story/StoryTOCMobile';
+import StoryEndcap from '../components/story/StoryEndcap';
 
 type TocItem = {
   id: string;
@@ -69,6 +70,10 @@ export default function StoryPage() {
       </div>
     );
   }
+
+  const index = stories.findIndex((s) => s.slug === story.slug);
+  const prev = index > 0 ? stories[index - 1] : undefined;
+  const next = index < stories.length - 1 ? stories[index + 1] : undefined;
 
   return (
     <div>
@@ -173,6 +178,7 @@ export default function StoryPage() {
           return null;
         })}
       </div>
+      <StoryEndcap prev={prev} next={next} />
     </div>
   );
 }
