@@ -192,6 +192,11 @@ export default function StoriesPage() {
 
   const featured = useMemo(() => stories.filter((s) => s.featured), []);
 
+  const featuredSlugs = useMemo(
+    () => new Set(featured.slice(0, 3).map((s) => s.slug)),
+    [featured],
+  );
+
   const clear = () => {
     setQuery('');
     setYear('All');
@@ -329,9 +334,21 @@ export default function StoriesPage() {
 
         <section>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((s) => (
-              <StoryCard key={s.slug} story={s} />
-            ))}
+            {filtered
+              .filter(
+                (s) =>
+                  !(
+                    featured.length > 0 &&
+                    year === 'All' &&
+                    location === 'All' &&
+                    tag === 'All' &&
+                    !query &&
+                    featuredSlugs.has(s.slug)
+                  ),
+              )
+              .map((s) => (
+                <StoryCard key={s.slug} story={s} />
+              ))}
           </div>
 
           {filtered.length === 0 && (

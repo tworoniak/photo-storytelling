@@ -16,7 +16,7 @@
 /* Global styles for html/body */
 @layer base {
   html {
-    @apply bg-background text-text;
+    @apply bg-neutral-950 text-neutral-100;
   }
   body {
     @apply leading-none font-normal;
@@ -37,10 +37,6 @@
 
   .container {
     @apply mx-auto max-w-7xl;
-  }
-
-  .bg-gradient {
-    @apply from-primary/50 via-surface/15 to-accent/15 bg-linear-to-r;
   }
 }
 

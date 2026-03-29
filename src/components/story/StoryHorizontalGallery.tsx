@@ -26,6 +26,9 @@ export default function StoryHorizontalGallery({
   const sectionRef = useRef<HTMLElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [travel, setTravel] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(
+    typeof window !== 'undefined' ? window.innerHeight : 800,
+  );
 
   const { open } = useLightbox();
 
@@ -48,6 +51,7 @@ export default function StoryHorizontalGallery({
       const viewportWidth = section.clientWidth;
       const trackWidth = track.scrollWidth;
       setTravel(Math.max(0, trackWidth - viewportWidth));
+      setViewportHeight(window.innerHeight);
     };
 
     measure();
@@ -102,9 +106,8 @@ export default function StoryHorizontalGallery({
 
   const heightPx = useMemo(() => {
     const base = 700;
-    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-    return Math.max(base, travel + vh * 0.6);
-  }, [travel]);
+    return Math.max(base, travel + viewportHeight * 0.6);
+  }, [travel, viewportHeight]);
 
   return (
     <section

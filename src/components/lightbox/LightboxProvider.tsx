@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -85,6 +86,8 @@ export default function LightboxProvider({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [state.isOpen, close, next, prev]);
 
+  const preloadCache = useRef<HTMLImageElement[]>([]);
+
   useEffect(() => {
     if (!state.isOpen || state.images.length <= 1) return;
 
@@ -96,11 +99,12 @@ export default function LightboxProvider({
       clampIndex(current - 1, len),
     ];
 
-    toPreload.forEach((i) => {
+    preloadCache.current = toPreload.map((i) => {
       const img = state.images[i];
       const url = cldImage(img.publicId, { width: 2400, quality: 'auto' });
       const pre = new Image();
       pre.src = url;
+      return pre;
     });
   }, [state.isOpen, state.index, state.images]);
 
