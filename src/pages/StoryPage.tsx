@@ -136,7 +136,7 @@ export default function StoryPage() {
         <div className="xl:grid xl:grid-cols-[180px_1fr] xl:gap-12">
           <StoryTOCDesktop items={tocItems} />
 
-          <article>
+          <article className="min-w-0">
         {story.blocks.map((block, index) => {
           const delay = Math.min(index * 0.04, 0.18);
 

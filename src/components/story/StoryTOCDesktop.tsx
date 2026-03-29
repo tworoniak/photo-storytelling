@@ -41,7 +41,7 @@ export default function StoryTOCDesktop({ items }: { items: TocItem[] }) {
 
   return (
     <nav aria-label="Table of contents" className="hidden xl:block">
-      <div className="sticky top-24 w-48">
+      <div className="sticky top-24">
         <p className="mb-4 text-xs tracking-[0.18em] text-neutral-500 uppercase">
           Contents
         </p>
