@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -37,9 +38,14 @@ export default function LightboxProvider({
 
   const close = useCallback(() => {
     setState((s) => ({ ...s, isOpen: false }));
+    if (triggerRef.current instanceof HTMLElement) {
+      triggerRef.current.focus();
+    }
+    triggerRef.current = null;
   }, []);
 
   const open = useCallback((images: LightboxImage[], startIndex = 0) => {
+    triggerRef.current = document.activeElement;
     setState({
       isOpen: true,
       images,
@@ -72,18 +78,54 @@ export default function LightboxProvider({
     };
   }, [state.isOpen]);
 
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (!state.isOpen) return;
 
+    closeButtonRef.current?.focus();
+
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close();
-      if (e.key === 'ArrowRight') next();
-      if (e.key === 'ArrowLeft') prev();
+      if (e.key === 'Escape') {
+        close();
+        return;
+      }
+      if (e.key === 'ArrowRight') { next(); return; }
+      if (e.key === 'ArrowLeft') { prev(); return; }
+
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusable = Array.from(
+          dialogRef.current.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+          ),
+        ).filter((el) => !el.hasAttribute('disabled'));
+
+        if (focusable.length === 0) { e.preventDefault(); return; }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
     };
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [state.isOpen, close, next, prev]);
+
+  const preloadCache = useRef<HTMLImageElement[]>([]);
+  const triggerRef = useRef<Element | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!state.isOpen || state.images.length <= 1) return;
@@ -96,11 +138,12 @@ export default function LightboxProvider({
       clampIndex(current - 1, len),
     ];
 
-    toPreload.forEach((i) => {
+    preloadCache.current = toPreload.map((i) => {
       const img = state.images[i];
       const url = cldImage(img.publicId, { width: 2400, quality: 'auto' });
       const pre = new Image();
       pre.src = url;
+      return pre;
     });
   }, [state.isOpen, state.index, state.images]);
 
@@ -124,11 +167,13 @@ export default function LightboxProvider({
             exit={{ opacity: 0 }}
             role="dialog"
             aria-modal="true"
+            aria-label={active.alt}
             onMouseDown={(e) => {
               if (e.target === e.currentTarget) close();
             }}
           >
             <motion.div
+              ref={dialogRef}
               className="relative w-full max-w-6xl"
               initial={{ y: 16, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -141,10 +186,11 @@ export default function LightboxProvider({
                 </div>
 
                 <button
+                  ref={closeButtonRef}
                   type="button"
                   onClick={close}
                   className="inline-flex items-center justify-center rounded-xl border border-neutral-700 bg-neutral-950/60 p-2 text-neutral-100 hover:bg-neutral-900"
-                  aria-label="Close"
+                  aria-label="Close lightbox"
                 >
                   <X size={18} />
                 </button>

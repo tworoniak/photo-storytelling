@@ -31,7 +31,7 @@ export default function StoryImage({
         type="button"
         onClick={() => open([lightboxImage], 0)}
         className="group block w-full text-left"
-        aria-label="Open image"
+        aria-label={`Open ${alt} in lightbox`}
       >
         <img
           src={url}

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { cldImage } from '../../utils/cloudinary';
+import { cldImage, cldSrcSet } from '../../utils/cloudinary';
 
 type StoryRef = {
   slug: string;
@@ -20,7 +20,8 @@ function StoryEndcapCard({
   const label = kind === 'next' ? 'Read next' : 'Previous story';
   const Icon = kind === 'next' ? ArrowRight : ArrowLeft;
 
-  const bg = cldImage(story.heroImageId, { width: 2200, quality: 'auto' });
+  const bg = cldImage(story.heroImageId, { width: 1400, quality: 'auto' });
+  const bgSrcSet = cldSrcSet(story.heroImageId, [640, 960, 1400]);
 
   return (
     <Link
@@ -30,6 +31,8 @@ function StoryEndcapCard({
       <div className="absolute inset-0">
         <img
           src={bg}
+          srcSet={bgSrcSet}
+          sizes="(min-width: 768px) 50vw, 100vw"
           alt={story.title}
           className="h-full w-full object-cover opacity-60 transition duration-500 group-hover:scale-[1.02] group-hover:opacity-70"
           loading="lazy"

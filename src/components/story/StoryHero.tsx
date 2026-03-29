@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { cldImage } from '../../utils/cloudinary';
+import { cldImage, cldSrcSet } from '../../utils/cloudinary';
 
 type Props = {
   title: string;
@@ -8,6 +8,7 @@ type Props = {
   location: string;
   date: string;
   heroImageId: string;
+  readTime?: number;
 };
 
 export default function StoryHero({
@@ -16,6 +17,7 @@ export default function StoryHero({
   location,
   date,
   heroImageId,
+  readTime,
 }: Props) {
   const ref = useRef<HTMLElement | null>(null);
 
@@ -30,13 +32,16 @@ export default function StoryHero({
   const titleY = useTransform(scrollYProgress, [0, 1], [0, -18]);
   const titleOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.92]);
 
-  const heroUrl = cldImage(heroImageId, { width: 2800, quality: 'auto:best' });
+  const heroUrl = cldImage(heroImageId, { width: 1800, quality: 'auto:best' });
+  const heroSrcSet = cldSrcSet(heroImageId, [640, 1080, 1800, 2800], 'auto:best');
 
   return (
     <section ref={ref} className="relative h-[95vh] min-h-[560px] w-full">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <motion.img
           src={heroUrl}
+          srcSet={heroSrcSet}
+          sizes="100vw"
           alt={title}
           className="absolute inset-0 h-[110%] w-full object-cover"
           style={{ y, scale }}
@@ -66,7 +71,15 @@ export default function StoryHero({
               {description}
             </p>
 
-            <p className="mt-8 text-sm text-neutral-200/80">Scroll to read ↓</p>
+            <div className="mt-8 flex items-center gap-4 text-sm text-neutral-200/80">
+              <span>Scroll to read ↓</span>
+              {readTime && (
+                <>
+                  <span className="text-neutral-600">·</span>
+                  <span>~{readTime} min read</span>
+                </>
+              )}
+            </div>
           </motion.div>
         </div>
       </div>

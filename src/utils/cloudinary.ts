@@ -10,3 +10,14 @@ export const cldImage = (publicId: string, options: Options = {}) => {
 
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_${width},q_${quality},f_auto/${publicId}`;
 };
+
+const HERO_WIDTHS = [640, 1080, 1800, 2800];
+
+export const cldSrcSet = (
+  publicId: string,
+  widths: number[] = HERO_WIDTHS,
+  quality = 'auto',
+) =>
+  widths
+    .map((w) => `${cldImage(publicId, { width: w, quality })} ${w}w`)
+    .join(', ');
