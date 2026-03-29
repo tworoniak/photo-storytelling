@@ -54,48 +54,28 @@ export default function StoryHorizontalGallery({
       setViewportHeight(window.innerHeight);
     };
 
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    const debouncedMeasure = () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(measure, 100);
+    };
+
     measure();
 
-    const ro = new ResizeObserver(measure);
+    const ro = new ResizeObserver(debouncedMeasure);
     ro.observe(section);
     ro.observe(track);
 
     window.addEventListener('load', measure);
-    window.addEventListener('resize', measure);
+    window.addEventListener('resize', debouncedMeasure);
 
     return () => {
+      clearTimeout(debounceTimer);
       ro.disconnect();
       window.removeEventListener('load', measure);
-      window.removeEventListener('resize', measure);
+      window.removeEventListener('resize', debouncedMeasure);
     };
   }, [images.length]);
-
-  //   useIsomorphicLayoutEffect(() => {
-  //     const section = sectionRef.current;
-  //     const track = trackRef.current;
-  //     if (!section || !track) return;
-
-  //     const measure = () => {
-  //       const viewportWidth = section.clientWidth;
-  //       const trackWidth = track.scrollWidth;
-  //       setTravel(Math.max(0, trackWidth - viewportWidth));
-  //     };
-
-  //     measure();
-
-  //     const ro = new ResizeObserver(measure);
-  //     ro.observe(section);
-  //     ro.observe(track);
-
-  //     window.addEventListener('load', measure);
-  //     window.addEventListener('resize', measure);
-
-  //     return () => {
-  //       ro.disconnect();
-  //       window.removeEventListener('load', measure);
-  //       window.removeEventListener('resize', measure);
-  //     };
-  //   }, [images.length]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,

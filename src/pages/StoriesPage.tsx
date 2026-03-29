@@ -13,6 +13,10 @@ function normalize(s: string) {
   return s.trim().toLowerCase();
 }
 
+const isFinePointer =
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(hover: hover) and (pointer: fine)').matches;
+
 function StoryCard({ story, featured }: { story: Story; featured?: boolean }) {
   const cover = cldImage(story.heroImageId, { width: 1800, quality: 'auto' });
 
@@ -31,10 +35,6 @@ function StoryCard({ story, featured }: { story: Story; featured?: boolean }) {
   // Lift + background zoom
   //   const lift = useTransform(sy, [-0.5, 0.5], [1, 1]); // keeps stable; we lift via variants
   const bgScale = useTransform(sx, [-0.5, 0.5], [1.04, 1.08]);
-
-  const isFinePointer =
-    typeof window !== 'undefined' &&
-    window.matchMedia?.('(hover: hover) and (pointer: fine)').matches;
 
   const onMove: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
     if (!isFinePointer) return;

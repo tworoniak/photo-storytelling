@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { stories } from '../data/stories';
 
@@ -30,37 +31,34 @@ export default function StoryPage() {
   const { slug } = useParams();
   const story = stories.find((s) => s.slug === slug);
 
-  // ✅ No hooks -> no hook/deps warnings
-  const tocItems: TocItem[] = story
-    ? story.blocks
-        .filter((b) => hasId(b))
-        .flatMap((b) => {
-          if (b.type === 'splitSticky') {
-            return [
-              {
-                id: b.id,
-                label: b.title ?? b.eyebrow ?? 'Chapter',
-                sublabel: b.eyebrow && b.title ? b.eyebrow : undefined,
-              },
-            ];
-          }
+  const tocItems = useMemo<TocItem[]>(() => {
+    if (!story) return [];
+    return story.blocks
+      .filter((b) => hasId(b))
+      .flatMap((b) => {
+        if (b.type === 'splitSticky') {
+          return [
+            {
+              id: b.id,
+              label: b.title ?? b.eyebrow ?? 'Chapter',
+              sublabel: b.eyebrow && b.title ? b.eyebrow : undefined,
+            },
+          ];
+        }
 
-          if (b.type === 'horizontalGallery') {
-            return [
-              {
-                id: b.id,
-                label: b.title ?? 'Gallery',
-                sublabel: b.subtitle,
-              },
-            ];
-          }
+        if (b.type === 'horizontalGallery') {
+          return [
+            {
+              id: b.id,
+              label: b.title ?? 'Gallery',
+              sublabel: b.subtitle,
+            },
+          ];
+        }
 
-          // If you later add `id?: string` to behindShot, you can include it here:
-          // if (b.type === 'behindShot') return [{ id: b.id, label: b.title, sublabel: 'Behind the shot' }];
-
-          return [];
-        })
-    : [];
+        return [];
+      });
+  }, [story]);
 
   if (!story) {
     return (
@@ -95,7 +93,7 @@ export default function StoryPage() {
 
           if (block.type === 'text') {
             return (
-              <MotionReveal key={index} delay={delay} y={12}>
+              <MotionReveal key={`${block.type}-${index}`} delay={delay} y={12}>
                 <StorySection>
                   <p className="mb-4 text-lg leading-relaxed text-neutral-200">
                     {block.content}
@@ -107,7 +105,7 @@ export default function StoryPage() {
 
           if (block.type === 'horizontalGallery') {
             return (
-              <MotionReveal key={index} delay={delay}>
+              <MotionReveal key={`${block.type}-${index}`} delay={delay}>
                 <StoryHorizontalGallery
                   id={block.id}
                   title={block.title}
@@ -120,7 +118,7 @@ export default function StoryPage() {
 
           if (block.type === 'splitSticky') {
             return (
-              <MotionReveal key={index} delay={delay}>
+              <MotionReveal key={`${block.type}-${index}`} delay={delay}>
                 <StorySection id={block.id}>
                   <StorySplitSticky
                     image={block.image}
@@ -135,7 +133,7 @@ export default function StoryPage() {
 
           if (block.type === 'image') {
             return (
-              <MotionReveal key={index} delay={delay}>
+              <MotionReveal key={`${block.type}-${index}`} delay={delay}>
                 <StorySection>
                   <StoryImage
                     publicId={block.publicId}
@@ -149,7 +147,7 @@ export default function StoryPage() {
 
           if (block.type === 'behindShot') {
             return (
-              <MotionReveal key={index} delay={delay} y={12}>
+              <MotionReveal key={`${block.type}-${index}`} delay={delay} y={12}>
                 <StorySection>
                   <StoryBehindShot
                     title={block.title}
@@ -163,7 +161,7 @@ export default function StoryPage() {
 
           if (block.type === 'audio') {
             return (
-              <MotionReveal key={index} delay={delay}>
+              <MotionReveal key={`${block.type}-${index}`} delay={delay}>
                 <StorySection>
                   <StoryAudio
                     title={block.title}
