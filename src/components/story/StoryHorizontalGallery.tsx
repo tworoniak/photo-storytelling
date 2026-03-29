@@ -131,7 +131,7 @@ export default function StoryHorizontalGallery({
                       type="button"
                       onClick={() => open(lightboxImages, idx)}
                       className="block w-full cursor-zoom-in text-left focus:ring-2 focus:ring-neutral-500/60 focus:outline-none"
-                      aria-label="Open image"
+                      aria-label={`Open ${img.alt} in lightbox`}
                     >
                       <img
                         src={url}

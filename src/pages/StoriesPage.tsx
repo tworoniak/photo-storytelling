@@ -230,6 +230,7 @@ export default function StoriesPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search title, location, tags…"
+              aria-label="Search stories"
               className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/40 py-3 pr-10 pl-10 text-sm text-neutral-100 outline-none placeholder:text-neutral-500 focus:border-neutral-600"
             />
             {query && (
@@ -249,6 +250,7 @@ export default function StoriesPage() {
             <select
               value={year}
               onChange={(e) => setYear(e.target.value)}
+              aria-label="Filter by year"
               className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/40 px-3 py-3 text-sm outline-none focus:border-neutral-600"
             >
               {years.map((y) => (
@@ -264,6 +266,7 @@ export default function StoriesPage() {
             <select
               value={location}
               onChange={(e) => setLocation(e.target.value)}
+              aria-label="Filter by location"
               className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/40 px-3 py-3 text-sm outline-none focus:border-neutral-600"
             >
               {locations.map((l) => (
@@ -279,6 +282,7 @@ export default function StoriesPage() {
             <select
               value={tag}
               onChange={(e) => setTag(e.target.value)}
+              aria-label="Filter by tag"
               className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/40 px-3 py-3 text-sm outline-none focus:border-neutral-600"
             >
               {tags.map((t) => (
