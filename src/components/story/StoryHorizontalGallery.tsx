@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useLightbox } from '../lightbox/lightbox.context';
 import type { LightboxImage } from '../lightbox/lightbox.types';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion';
 import { cldImage } from '../../utils/cloudinary';
 
 type GalleryImage = {
@@ -84,6 +84,12 @@ export default function StoryHorizontalGallery({
 
   const x = useTransform(scrollYProgress, [0, 1], [0, -travel]);
 
+  const [activeIdx, setActiveIdx] = useState(0);
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    const idx = Math.round(v * (images.length - 1));
+    setActiveIdx(Math.min(Math.max(0, idx), images.length - 1));
+  });
+
   const heightPx = useMemo(() => {
     const base = 700;
     return Math.max(base, travel + viewportHeight * 0.6);
@@ -154,9 +160,27 @@ export default function StoryHorizontalGallery({
             </motion.div>
           </div>
 
-          <p className="mt-3 text-xs text-neutral-500">
-            Tip: keep scrolling — the gallery moves sideways.
-          </p>
+          <div className="mt-3 flex items-center gap-3">
+            {images.length > 1 && (
+              <div className="flex items-center gap-1.5">
+                {images.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      i === activeIdx
+                        ? 'w-4 bg-neutral-300'
+                        : 'w-1.5 bg-neutral-600'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+            <p className="text-xs text-neutral-500">
+              {images.length > 1
+                ? `${activeIdx + 1} / ${images.length} — keep scrolling`
+                : 'Tip: keep scrolling — the gallery moves sideways.'}
+            </p>
+          </div>
         </div>
       </div>
     </section>

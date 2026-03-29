@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { stories } from '../data/stories';
 
@@ -12,7 +12,10 @@ import ReadingProgress from '../components/motion/ReadingProgress';
 import StorySplitSticky from '../components/story/StorySplitSticky';
 import StoryHorizontalGallery from '../components/story/StoryHorizontalGallery';
 import StoryTOCMobile from '../components/story/StoryTOCMobile';
+import StoryTOCDesktop from '../components/story/StoryTOCDesktop';
 import StoryEndcap from '../components/story/StoryEndcap';
+import { readTime } from '../utils/readTime';
+import { cldImage } from '../utils/cloudinary';
 
 type TocItem = {
   id: string;
@@ -69,9 +72,50 @@ export default function StoryPage() {
     );
   }
 
+  const storyReadTime = useMemo(() => readTime(story), [story]);
+
   const index = stories.findIndex((s) => s.slug === story.slug);
   const prev = index > 0 ? stories[index - 1] : undefined;
   const next = index < stories.length - 1 ? stories[index + 1] : undefined;
+
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = `${story.title} | Photo Stories`;
+
+    const setMeta = (name: string, content: string) => {
+      let el = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('name', name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    const setOg = (property: string, content: string) => {
+      let el = document.querySelector<HTMLMetaElement>(
+        `meta[property="${property}"]`,
+      );
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('property', property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    const ogImage = cldImage(story.heroImageId, { width: 1200, quality: 'auto' });
+
+    setMeta('description', story.description);
+    setOg('og:title', story.title);
+    setOg('og:description', story.description);
+    setOg('og:image', ogImage);
+    setOg('og:type', 'article');
+
+    return () => {
+      document.title = prevTitle;
+    };
+  }, [story]);
 
   return (
     <div>
@@ -83,11 +127,16 @@ export default function StoryPage() {
         location={story.location}
         date={story.date}
         heroImageId={story.heroImageId}
+        readTime={storyReadTime}
       />
 
       <StoryTOCMobile items={tocItems} />
 
-      <div className="mx-auto max-w-3xl px-6 py-16">
+      <div className="mx-auto max-w-3xl px-6 py-16 xl:max-w-5xl">
+        <div className="xl:grid xl:grid-cols-[180px_1fr] xl:gap-12">
+          <StoryTOCDesktop items={tocItems} />
+
+          <article>
         {story.blocks.map((block, index) => {
           const delay = Math.min(index * 0.04, 0.18);
 
@@ -175,6 +224,8 @@ export default function StoryPage() {
 
           return null;
         })}
+          </article>
+        </div>
       </div>
       <StoryEndcap prev={prev} next={next} />
     </div>

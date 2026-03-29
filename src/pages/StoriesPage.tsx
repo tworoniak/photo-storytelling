@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useMemo } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 import { stories, type Story } from '../data/stories';
 import { cldImage } from '../utils/cloudinary';
+import { readTime } from '../utils/readTime';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 function uniqSorted(arr: string[]) {
@@ -18,7 +19,9 @@ const isFinePointer =
   window.matchMedia?.('(hover: hover) and (pointer: fine)').matches;
 
 function StoryCard({ story, featured }: { story: Story; featured?: boolean }) {
-  const cover = cldImage(story.heroImageId, { width: 1800, quality: 'auto' });
+  const navigate = useNavigate();
+  const cover = cldImage(story.heroImageId, { width: 1400, quality: 'auto' });
+  const storyReadTime = useMemo(() => readTime(story), [story]);
 
   // Motion values (raw)
   const mx = useMotionValue(0);
@@ -109,7 +112,7 @@ function StoryCard({ story, featured }: { story: Story; featured?: boolean }) {
           )}
 
           <div className="text-xs tracking-[0.22em] text-neutral-300/90 uppercase">
-            {story.location} • {story.date}
+            {story.location} • {story.date} • ~{storyReadTime} min
           </div>
 
           <h3 className="mt-3 text-2xl font-semibold tracking-tight">
@@ -123,13 +126,18 @@ function StoryCard({ story, featured }: { story: Story; featured?: boolean }) {
           {story.tags?.length ? (
             <div className="mt-5 flex flex-wrap gap-2">
               {story.tags.slice(0, 4).map((t) => (
-                <span
+                <button
                   key={t}
-                  className="rounded-full border border-neutral-700 bg-neutral-950/50 px-3 py-1 text-xs text-neutral-200"
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(`/stories?tag=${encodeURIComponent(t)}`);
+                  }}
+                  className="rounded-full border border-neutral-700 bg-neutral-950/50 px-3 py-1 text-xs text-neutral-200 transition hover:border-neutral-500 hover:bg-neutral-900"
                   style={{ transform: 'translateZ(14px)' }}
                 >
                   {t}
-                </span>
+                </button>
               ))}
             </div>
           ) : null}
@@ -150,10 +158,24 @@ function StoryCard({ story, featured }: { story: Story; featured?: boolean }) {
 }
 
 export default function StoriesPage() {
-  const [query, setQuery] = useState('');
-  const [year, setYear] = useState<string>('All');
-  const [location, setLocation] = useState<string>('All');
-  const [tag, setTag] = useState<string>('All');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const query = searchParams.get('q') ?? '';
+  const year = searchParams.get('year') ?? 'All';
+  const location = searchParams.get('location') ?? 'All';
+  const tag = searchParams.get('tag') ?? 'All';
+
+  const updateParam = useCallback(
+    (key: string, value: string, defaultValue = 'All') => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        if (value && value !== defaultValue) next.set(key, value);
+        else next.delete(key);
+        return next;
+      });
+    },
+    [setSearchParams],
+  );
 
   const years = useMemo(
     () => ['All', ...uniqSorted(stories.map((s) => s.date))],
@@ -197,12 +219,7 @@ export default function StoriesPage() {
     [featured],
   );
 
-  const clear = () => {
-    setQuery('');
-    setYear('All');
-    setLocation('All');
-    setTag('All');
-  };
+  const clear = () => setSearchParams({});
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -228,7 +245,7 @@ export default function StoriesPage() {
             />
             <input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => updateParam('q', e.target.value, '')}
               placeholder="Search title, location, tags…"
               aria-label="Search stories"
               className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/40 py-3 pr-10 pl-10 text-sm text-neutral-100 outline-none placeholder:text-neutral-500 focus:border-neutral-600"
@@ -236,7 +253,7 @@ export default function StoriesPage() {
             {query && (
               <button
                 type="button"
-                onClick={() => setQuery('')}
+                onClick={() => updateParam('q', '', '')}
                 className="absolute top-1/2 right-2 -translate-y-1/2 rounded-xl p-2 text-neutral-300 hover:bg-neutral-900"
                 aria-label="Clear search"
               >
@@ -249,7 +266,7 @@ export default function StoriesPage() {
           <div className="md:col-span-2">
             <select
               value={year}
-              onChange={(e) => setYear(e.target.value)}
+              onChange={(e) => updateParam('year', e.target.value)}
               aria-label="Filter by year"
               className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/40 px-3 py-3 text-sm outline-none focus:border-neutral-600"
             >
@@ -265,7 +282,7 @@ export default function StoriesPage() {
           <div className="md:col-span-3">
             <select
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={(e) => updateParam('location', e.target.value)}
               aria-label="Filter by location"
               className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/40 px-3 py-3 text-sm outline-none focus:border-neutral-600"
             >
@@ -281,7 +298,7 @@ export default function StoriesPage() {
           <div className="md:col-span-2">
             <select
               value={tag}
-              onChange={(e) => setTag(e.target.value)}
+              onChange={(e) => updateParam('tag', e.target.value)}
               aria-label="Filter by tag"
               className="w-full rounded-2xl border border-neutral-800 bg-neutral-950/40 px-3 py-3 text-sm outline-none focus:border-neutral-600"
             >
