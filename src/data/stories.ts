@@ -124,12 +124,12 @@ export const stories: Story[] = [
         content:
           'Photographing Heilung is a balancing act: the instinct is to chase detail — beads, fringe, paint — but the stronger choice is often silhouette. Let the light tell the truth first.',
       },
-      {
-        type: 'audio',
-        title: 'Audio',
-        src: '/audio/majestic-sonata.mp3',
-        subtitle: 'Recorded at Red Rocks (2024)',
-      },
+      // {
+      //   type: 'audio',
+      //   title: 'Audio',
+      //   src: '/audio/majestic-sonata.mp3',
+      //   subtitle: 'Recorded at Red Rocks (2024)',
+      // },
     ],
   },
   // Story 002
@@ -222,12 +222,12 @@ export const stories: Story[] = [
         content:
           'Photographing Heilung is a balancing act: the instinct is to chase detail — beads, fringe, paint — but the stronger choice is often silhouette. Let the light tell the truth first.',
       },
-      {
-        type: 'audio',
-        title: 'Audio',
-        src: '/audio/majestic-sonata.mp3',
-        subtitle: 'Recorded at Red Rocks (2024)',
-      },
+      // {
+      //   type: 'audio',
+      //   title: 'Audio',
+      //   src: '/audio/majestic-sonata.mp3',
+      //   subtitle: 'Recorded at Red Rocks (2024)',
+      // },
     ],
   },
   // Story 003
