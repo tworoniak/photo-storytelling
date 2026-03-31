@@ -1,108 +1,128 @@
-# React + TypeScript + Vite
+# Lumina
 
-# Interactive Photo Storytelling 📸✨
-
-A scroll-driven, digital magazine-style photo storytelling experience built with **React + TypeScript**, featuring cinematic parallax hero sections, animated chapter reveals, embedded audio moments, and an editorial chapter navigation system.
-
-This project is designed as a premium, portfolio-ready showcase of modern frontend UI engineering — combining performance, layout design, and motion-driven storytelling.
+Long-form editorial photography platform. Each story is a curated photo essay with scroll-driven layout, motion, atmosphere, and behind-the-shot notes. Dark-themed, cinematic aesthetic — built for the floor, the pit, and the stage.
 
 ---
 
-## ✨ Features
+## Stack
 
-### 📰 Digital Magazine Layout
-
-A long-form editorial page structure designed for immersive photo stories:
-
-- Full-screen hero cover
-- Captioned photography blocks
-- “Behind the Shot” callouts
-- Sticky image + scrolling text chapter sections
-
-### 🎞 Scroll-Based Animations
-
-Smooth, subtle scroll interactions powered by **Framer Motion**:
-
-- fade-in reveal blocks
-- scroll-driven parallax hero motion
-- cinematic zoom/overlay transitions
-
-### 📍 Chapter Navigation / Table of Contents
-
-A desktop-friendly sticky TOC system:
-
-- auto-generated chapter links
-- smooth scrolling to sections
-- active chapter highlighting while scrolling
-
-### 📊 Reading Progress Indicator
-
-A minimal progress bar that tracks story scroll position for an editorial reading experience.
-
-### 🔊 Embedded Audio Blocks
-
-Support for audio “sound postcards” to add atmosphere:
-
-- ambient crowd noise
-- backstage moments
-- ritual / cinematic sound elements
-
-### ☁️ Cloudinary Image Delivery
-
-All photography is served via Cloudinary for performance and scalability:
-
-- optimized image delivery
-- automatic format conversion (`f_auto`)
-- quality control (`q_auto` / `auto:best`)
-- responsive sizing support
+| | |
+|---|---|
+| React 19 + TypeScript | UI + type safety |
+| Vite | Build tooling |
+| Tailwind CSS v4 | Styling via `@tailwindcss/vite` plugin |
+| Framer Motion v12 | Scroll animations, parallax, entrance reveals |
+| React Router v7 | Client-side routing |
+| Cloudinary | Image hosting + responsive delivery (no SDK — raw URL helper) |
 
 ---
 
-## 🧰 Tech Stack
+## Features
 
-- **React**
-- **TypeScript**
-- **Vite**
-- **TailwindCSS**
-- **Framer Motion**
-- **React Router DOM**
-- **Cloudinary (image hosting + optimization)**
+### Cinematic homepage
+Full-viewport hero section using the featured story's cover image. Parallax scroll, gradient overlays, entrance animations, and a transparent-to-solid site header that reacts to scroll position.
+
+### Story reader
+Long-form page layout with support for six block types:
+
+| Block | Description |
+|---|---|
+| `text` | Prose paragraph |
+| `image` | Single Cloudinary image with optional caption + lightbox |
+| `behindShot` | Callout with title, notes, and camera settings |
+| `audio` | Embedded audio player (ambient / backstage moments) |
+| `splitSticky` | Sticky image left, scrolling text right |
+| `horizontalGallery` | Horizontal-scroll photo gallery with progress dots |
+
+### Navigation & TOC
+- Sticky desktop TOC sidebar (xl+ breakpoints) with `IntersectionObserver` active-section tracking
+- Floating mobile TOC button
+- Reading progress bar
+
+### Stories index (`/stories`)
+- Full-bleed image cards with 3D tilt effect (fine-pointer only)
+- Featured story slot
+- Search + filter by year, location, and tag — all state in URL search params for bookmarkable links
+- Tag click-through from story cards
+
+### Performance
+- Cloudinary `srcset` on hero images (640 / 1080 / 1800 / 2800w)
+- `f_auto` format conversion + `q_auto` quality on all images
+- Lightbox image preloading with ref-held `Image` objects to prevent GC
+- Debounced resize handlers
+
+### Accessibility
+- Full focus trap in lightbox (captures trigger element, constrains Tab, restores focus on close)
+- Descriptive `aria-label` on all image trigger buttons
+- Labelled filter controls on stories index
+- Semantic `<article>` / `<section>` landmark structure in story reader
 
 ---
 
-## 📂 Project Structure
+## Project structure
 
-```txt
+```
 src/
   app/
     router.tsx
 
   pages/
-    HomePage.tsx
-    StoryPage.tsx
-
-  data/
-    stories.ts
+    HomePage.tsx          — cinematic landing page
+    StoriesPage.tsx       — filterable story index
+    StoryPage.tsx         — full story reader
 
   components/
-    motion/
-      MotionReveal.tsx
-      ReadingProgress.tsx
+    SiteHeader.tsx        — fixed nav, scroll-aware transparency
 
     story/
-      StoryHero.tsx
-      StorySection.tsx
-      StoryImage.tsx
-      StoryBehindShot.tsx
-      StoryAudio.tsx
+      StoryCard.tsx       — image card with 3D tilt (used on home + stories)
+      StoryHero.tsx       — parallax hero section
+      StorySection.tsx    — text block renderer
+      StoryImage.tsx      — single image + lightbox trigger
+      StoryBehindShot.tsx — behind-the-shot callout
+      StoryAudio.tsx      — embedded audio player
       StorySplitSticky.tsx
-      StoryTOC.tsx
+      StoryHorizontalGallery.tsx
+      StoryTOCDesktop.tsx
+      StoryTOCMobile.tsx
+      StoryEndcap.tsx
+
+    lightbox/
+      LightboxProvider.tsx
+
+    motion/
+      MotionReveal.tsx    — whileInView fade+slide reveal
+      ReadingProgress.tsx — scroll progress bar
+
+    ScrollToTop.tsx
+    ScrollToTopButton.tsx
+
+  data/
+    stories.ts            — all story content (acts as the CMS)
 
   utils/
-    cloudinary.ts
+    cloudinary.ts         — cldImage() + cldSrcSet() URL builders
+    readTime.ts           — word-count based read time estimate
 
   App.tsx
   main.tsx
   index.css
+```
+
+---
+
+## Environment
 
 ```
+VITE_CLOUDINARY_CLOUD_NAME=your_cloud_name
+```
+
+---
+
+## Routes
+
+| Path | Page |
+|---|---|
+| `/` | Homepage — hero + featured + recent stories |
+| `/stories` | Story index with search + filters |
+| `/stories/:slug` | Full story reader |
