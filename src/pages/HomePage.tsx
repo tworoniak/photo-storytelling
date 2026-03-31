@@ -54,7 +54,7 @@ export default function HomePage() {
       <SiteHeader />
 
       {/* ── Hero ─────────────────────────────────────────────────── */}
-      <section ref={heroRef} className="relative h-[95vh] min-h-[560px] w-full">
+      <section ref={heroRef} className="relative h-screen min-h-[560px] w-full">
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {heroStory && (
             <>

@@ -23,7 +23,7 @@ export default function SiteHeader() {
           to="/"
           className="text-sm font-semibold tracking-[0.18em] text-white uppercase"
         >
-          Photo Stories
+          Lumina
         </Link>
 
         <nav>
